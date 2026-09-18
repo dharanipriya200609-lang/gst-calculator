@@ -1,1 +1,235 @@
 # gst-calculator
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GST Calculator - CGST SGST IGST</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    padding: 20px;
+}
+
+.container {
+    max-width: 520px;
+    margin: 30px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 7px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    margin-top: 20px;
+}
+
+.calculate {
+    background: #222;
+    color: white;
+}
+
+.reset {
+    background: #ddd;
+}
+
+.result {
+    display: none;
+    margin-top: 22px;
+    padding: 18px;
+    background: #f7f7f7;
+    border-radius: 10px;
+    line-height: 1.9;
+}
+
+.total {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+    font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>GST Calculator</h1>
+
+<div class="subtitle">
+CGST • SGST • IGST • Inclusive & Exclusive
+</div>
+
+<label>Enter Amount (₹)</label>
+<input
+    type="number"
+    id="amount"
+    placeholder="Example: 10000"
+    min="0"
+>
+
+<label>GST Rate</label>
+<select id="gstRate">
+    <option value="5">5%</option>
+    <option value="12">12%</option>
+    <option value="18" selected>18%</option>
+    <option value="28">28%</option>
+</select>
+
+<label>Calculation Type</label>
+<select id="type">
+    <option value="exclusive">GST Exclusive</option>
+    <option value="inclusive">GST Inclusive</option>
+</select>
+
+<label>Tax Type</label>
+<select id="taxType">
+    <option value="cgstsgst">CGST + SGST</option>
+    <option value="igst">IGST</option>
+</select>
+
+<button class="calculate" onclick="calculateGST()">
+    Calculate GST
+</button>
+
+<button class="reset" onclick="resetCalculator()">
+    Reset
+</button>
+
+<div class="result" id="result"></div>
+
+<div class="footer">
+    Free Online GST Calculator
+</div>
+
+</div>
+
+<script>
+
+function calculateGST() {
+
+    let amount = Number(document.getElementById("amount").value);
+    let rate = Number(document.getElementById("gstRate").value);
+    let type = document.getElementById("type").value;
+    let taxType = document.getElementById("taxType").value;
+
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+    }
+
+    let baseAmount;
+    let gstAmount;
+    let finalAmount;
+
+    // GST Exclusive
+    if (type === "exclusive") {
+
+        baseAmount = amount;
+        gstAmount = amount * rate / 100;
+        finalAmount = amount + gstAmount;
+
+    }
+
+    // GST Inclusive
+    else {
+
+        finalAmount = amount;
+        gstAmount = amount * rate / (100 + rate);
+        baseAmount = amount - gstAmount;
+
+    }
+
+    let html = "";
+
+    html += "<b>Base Amount:</b> ₹" +
+            baseAmount.toFixed(2) + "<br>";
+
+    if (taxType === "cgstsgst") {
+
+        let cgst = gstAmount / 2;
+        let sgst = gstAmount / 2;
+
+        html += "<b>CGST (" + (rate / 2) + "%):</b> ₹" +
+                cgst.toFixed(2) + "<br>";
+
+        html += "<b>SGST (" + (rate / 2) + "%):</b> ₹" +
+                sgst.toFixed(2) + "<br>";
+
+    } else {
+
+        html += "<b>IGST (" + rate + "%):</b> ₹" +
+                gstAmount.toFixed(2) + "<br>";
+    }
+
+    html += "<b>Total GST:</b> ₹" +
+            gstAmount.toFixed(2) + "<br><br>";
+
+    html += "<div class='total'>Final Amount: ₹" +
+            finalAmount.toFixed(2) + "</div>";
+
+    let result = document.getElementById("result");
+
+    result.innerHTML = html;
+    result.style.display = "block";
+}
+
+function resetCalculator() {
+
+    document.getElementById("amount").value = "";
+    document.getElementById("gstRate").value = "18";
+    document.getElementById("type").value = "exclusive";
+    document.getElementById("taxType").value = "cgstsgst";
+
+    document.getElementById("result").style.display = "none";
+    document.getElementById("result").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
