@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GST Calculator</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ff6a00, #ee0979, #6a11cb, #2575fc);
+  background-size: 400% 400%;
+  animation: bg 10s ease infinite;
+}
+
+@keyframes bg {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.box {
+  width: 90%;
+  max-width: 420px;
+  background: white;
+  padding: 25px;
+  border-radius: 25px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.3);
+}
+
+h1 {
+  text-align: center;
+  color: #ee0979;
+  margin-bottom: 25px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 15px;
+}
+
+input, select {
+  width: 100%;
+  padding: 13px;
+  margin-top: 7px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.calculate {
+  background: linear-gradient(90deg, #ff6a00, #ee0979);
+}
+
+.reset {
+  background: #555;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f3f0ff;
+  line-height: 1.8;
+}
+
+.amount {
+  color: #6a11cb;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>🧮 GST Calculator</h1>
+
+<label>💰 Amount</label>
+<input type="number" id="amount" placeholder="Enter amount">
+
+<label>📊 GST Rate</label>
+<select id="rate">
+<option value="5">5%</option>
+<option value="12">12%</option>
+<option value="18" selected>18%</option>
+<option value="28">28%</option>
+</select>
+
+<label>🔄 Calculation Type</label>
+<select id="type">
+<option value="exclusive">GST Exclusive</option>
+<option value="inclusive">GST Inclusive</option>
+</select>
+
+<label>🏷️ Tax Type</label>
+<select id="tax">
+<option value="local">CGST + SGST</option>
+<option value="igst">IGST</option>
+</select>
+
+<button class="calculate" onclick="calculateGST()">
+Calculate GST
+</button>
+
+<button class="reset" onclick="resetGST()">
+Reset
+</button>
+
+<div class="result" id="result">
+Enter amount and press Calculate GST
+</div>
+
+</div>
+
+<script>
+
+function calculateGST() {
+
+let amount = parseFloat(document.getElementById("amount").value);
+let rate = parseFloat(document.getElementById("rate").value);
+let type = document.getElementById("type").value;
+let tax = document.getElementById("tax").value;
+
+if (isNaN(amount) || amount <= 0) {
+document.getElementById("result").innerHTML =
+"⚠️ Please enter a valid amount";
+return;
+}
+
+let baseAmount;
+let gst;
+let finalAmount;
+
+if (type === "exclusive") {
+
+baseAmount = amount;
+gst = amount * rate / 100;
+finalAmount = amount + gst;
+
+} else {
+
+finalAmount = amount;
+gst = amount * rate / (100 + rate);
+baseAmount = amount - gst;
+
+}
+
+let output = `
+<div class="amount">💵 Base Amount: ₹${baseAmount.toFixed(2)}</div>
+`;
+
+if (tax === "local") {
+
+let cgst = gst / 2;
+let sgst = gst / 2;
+
+output += `
+🟢 CGST: ₹${cgst.toFixed(2)}<br>
+🔵 SGST: ₹${sgst.toFixed(2)}<br>
+`;
+
+} else {
+
+output += `
+🟣 IGST: ₹${gst.toFixed(2)}<br>
+`;
+
+}
+
+output += `
+🟠 Total GST: ₹${gst.toFixed(2)}<br>
+<strong>💰 Final Amount: ₹${finalAmount.toFixed(2)}</strong>
+`;
+
+document.getElementById("result").innerHTML = output;
+
+}
+
+function resetGST() {
+
+document.getElementById("amount").value = "";
+
+document.getElementById("rate").value = "18";
+
+document.getElementById("type").value = "exclusive";
+
+document.getElementById("tax").value = "local";
+
+document.getElementById("result").innerHTML =
+"Enter amount and press Calculate GST";
+
+}
+
+</script>
+
+</body>
+</html>
